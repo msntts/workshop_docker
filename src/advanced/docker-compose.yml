@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  frontend_adapter:
+    environment:
+      - dst=http://frontend:5000
+    build: ./frontend_adapter
+    image: frontend_adapter:1.0
+    container_name: frontend_adapter
+    networks:
+      - yoisho-net
+    ports: 
+      - 8080:5000
+    
+
+  frontend:
+    depends_on:
+      - backend
+      - frontend_adapter
+    environment:
+      - dst=http://backend:5000
+    build: ./frontend
+    image: frontend:1.0
+    container_name: frontend
+    networks:
+      - yoisho-net
+
+
+  backend:
+    build: ./backend
+    image: backend:1.0
+    container_name: backend
+    networks:
+      - yoisho-net
+    volumes:
+      - yoisho-log:/log
+
+
+  backend_sidecar:
+    build: ./backend_sidecar
+    image: backend_sidecar:1.0
+    container_name: backend_sidecar
+    networks:
+      - yoisho-net
+    ports:
+      - 8081:5000
+    volumes:
+      - yoisho-log:/log:ro
+
+networks:
+  yoisho-net:
+    driver: bridge
+
+volumes:
+  yoisho-log:
+    driver: local

@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  frontend:
+    depends_on:
+      - backend
+    environment:
+      - dst=http://backend:5000
+    build: ./frontend
+    image: frontend:1.0
+    container_name: frontend
+    ports: 
+      - 8080:5000
+    networks:
+      - yoisho-net
+
+  backend:
+    build: ./backend
+    image: backend:1.0
+    container_name: backend
+    networks:
+      - yoisho-net
+    volumes:
+      - yoisho-log:/log
+
+networks:
+  yoisho-net:
+    driver: bridge
+
+volumes:
+  yoisho-log:
+    driver: local
