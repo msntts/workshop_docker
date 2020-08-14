@@ -1,12 +1,12 @@
 version: '3'
 
 services:
-  frontend_adapter:
+  frontend_sidecar:
     environment:
       - dst=http://frontend:5000
-    build: ./frontend_adapter
-    image: frontend_adapter:1.0
-    container_name: frontend_adapter
+    build: ./frontend_sidecar
+    image: frontend_sidecar:1.0
+    container_name: frontend_sidecar
     networks:
       - yoisho-net
     ports: 
@@ -16,7 +16,7 @@ services:
   frontend:
     depends_on:
       - backend
-      - frontend_adapter
+      - frontend_sidecar
     environment:
       - dst=http://backend:5000
     build: ./frontend
@@ -37,6 +37,8 @@ services:
 
 
   backend_sidecar:
+    depends_on:
+      - backend
     build: ./backend_sidecar
     image: backend_sidecar:1.0
     container_name: backend_sidecar
